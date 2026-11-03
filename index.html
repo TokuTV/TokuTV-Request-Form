@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TokuTV Archive Request</title>
+  <style>
+    :root { --accent:#111; --bg:#eee; --card:#fff; --text:#161616; --muted:#555; }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font:16px Arial,Helvetica,sans-serif; line-height:1.5; }
+    main { width:min(720px, calc(100% - 24px)); margin:18px auto 40px; }
+    .card { background:var(--card); border-radius:8px; margin:0 0 14px; overflow:hidden; box-shadow:0 1px 2px #0001; }
+    .top { border-top:10px solid var(--accent); padding:14px 24px 18px; }
+    h1 { margin:0; font-size:clamp(26px,5vw,34px); font-weight:400; }
+    .bar { background:#000; color:#fff; padding:14px 22px; }
+    .content { padding:22px 18px; }
+    .instructions p { margin:0 0 18px; }
+    .instructions p:last-child { margin-bottom:0; }
+    a { color:#06c; }
+    .choice { display:flex; gap:12px; align-items:flex-start; border:1px solid #bbb; border-radius:6px; padding:15px; margin:12px 0; cursor:pointer; }
+    .choice:hover { background:#f8f8f8; }
+    .choice input { margin-top:5px; }
+    label.field-label { display:block; font-weight:500; margin-bottom:5px; }
+    .hint { margin:0 0 18px; }
+    input[type=text] { display:block; width:min(100%,420px); border:0; border-bottom:1px solid #999; border-radius:0; padding:12px 0; font:inherit; outline-offset:3px; }
+    input[type=text]:focus { border-bottom:2px solid #111; }
+    button { background:#000; color:#fff; border:0; border-radius:4px; padding:12px 22px; font:inherit; font-weight:600; cursor:pointer; }
+    button.secondary { background:#fff; color:#111; border:1px solid #aaa; }
+    button:disabled { opacity:.6; cursor:wait; }
+    .actions { display:flex; justify-content:space-between; gap:12px; margin-top:24px; }
+    .status { display:none; margin-top:16px; padding:12px; border-radius:5px; background:#f4f4f4; }
+    .status.error { display:block; background:#fff0f0; color:#8b0000; }
+    .status.success { display:block; background:#eef8ef; color:#14532d; }
+    .hidden { display:none !important; }
+    .small { color:var(--muted); font-size:14px; }
+    @media (max-width:480px) { .top { padding:12px 16px; } .content { padding:18px 15px; } }
+  </style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <div class="top"><h1>TokuTV Archive Request</h1></div>
+    <div class="content small">Use this form to request an archive addition. Please read the rules below before submitting. By submitting, you acknowledge that your IP address is collected privately for request-abuse prevention and is not displayed on the public request-status sheet.</div>
+  </section>
+
+  <section class="card" id="mainPage">
+    <div class="bar">Request Form</div>
+    <div class="content instructions">
+      <p><strong>DO NOT REPEAT REQUESTS!!! LOOK OVER WHAT I HAVE UPLOADED ON THE TOKUARCHIVE PAGE &amp; WHAT IS ALREADY REQUESTED ON THE REQUEST PAGE BEFORE SUBMITTING — LINK: <a href="https://tokuarchive.com/" target="_blank" rel="noopener">TokuArchive</a></strong></p>
+      <p><strong>- Request any Tokusatsu show you want to be archived on this page (it can be any show)</strong></p>
+      <p><strong>- DO NOT SPAM + Do not request multiple shows/seasons in one response; do it separately</strong></p>
+      <p><strong>- Do not request anything from this list: Zeztz Movie/MyTh Specials/Gavan Infinity Movie/Omegahorn Specials/Agito Movie</strong></p>
+      <p><strong>- Anime requests must be tokusatsu-adjacent</strong></p>
+      <p><strong>- I do not take J-Drama requests</strong></p>
+      <p><strong>- Do not request western tokusatsu (Power Rangers, Masked Rider, etc.); these are readily available on the internet as opposed to eastern tokusatsu</strong></p>
+      <p><strong>Failure to follow the rules will lead to your request being declined.</strong></p>
+      <p>You can check the status of requests on this spreadsheet page: <a href="https://docs.google.com/spreadsheets/d/1OfmjAMmUs3fdraim6Nsshym29gD0X_0nEDLiWpwKOo4/edit" target="_blank" rel="noopener">TokuTV Archive Request Status Page</a></p>
+      <h2 style="font-size:18px;margin-top:28px">Choose a request type</h2>
+      <label class="choice"><input type="radio" name="requestType" value="show"><span><strong>Request a Show/Movie/Special</strong><br><span class="small">Request something that has not already been uploaded to the archive.</span></span></label>
+      <label class="choice"><input type="radio" name="requestType" value="missing"><span><strong>Request a Missing Episode/Movie/Special</strong><br><span class="small">Only for content from a show already uploaded to the archive.</span></span></label>
+      <div class="actions"><span></span><button id="continueBtn">Next</button></div>
+      <div id="mainStatus" class="status" role="status"></div>
+    </div>
+  </section>
+
+  <section class="card hidden" id="requestPage">
+    <div class="bar" id="requestHeading">Request Form</div>
+    <div class="content">
+      <div id="showInstructions" class="instructions hidden">
+        <p><strong>Request any tokusatsu show you want to be archived on this page (it can be any show).</strong></p>
+        <p><strong>Do not request multiple shows or seasons in one response. Submit them separately.</strong></p>
+      </div>
+      <div id="missingInstructions" class="instructions hidden">
+        <p>THIS FORM IS FOR ANYTHING MISSING FROM WHAT I ALREADY HAVE UPLOADED.</p>
+        <p><strong>- Only request missing episodes/movies/specials for a show that is already uploaded. Check the archive beforehand: <a href="https://tokuarchive.com/" target="_blank" rel="noopener">TokuArchive</a>.</strong></p>
+        <p><strong>For anything I have not uploaded, please use the Request a Show option. For example, "Ultraman Regulos" and "Ultra Fight Zero" are not missing; they must go in the request-a-show option.</strong></p>
+        <p><strong>Request a missing item only for something that I already have uploaded on my archive.</strong></p>
+        <p><strong>Failure to follow the rules will lead to your request being declined.</strong></p>
+        <p>You can check the status of requests on this spreadsheet page: <a href="https://docs.google.com/spreadsheets/d/1OfmjAMmUs3fdraim6Nsshym29gD0X_0nEDLiWpwKOo4/edit" target="_blank" rel="noopener">TokuTV Archive Request Status Page</a></p>
+      </div>
+      <form id="requestForm">
+        <label class="field-label" for="itemName" id="fieldLabel">Requested Item Name:</label>
+        <p class="hint" id="fieldHint">Keep this short please; only type in the name.</p>
+        <input id="itemName" name="itemName" type="text" maxlength="200" required autocomplete="off" placeholder="Your answer">
+        <div class="actions">
+          <button type="button" class="secondary" id="backBtn">Back</button>
+          <button type="submit" id="submitBtn">Submit</button>
+        </div>
+        <div id="formStatus" class="status" role="status" aria-live="polite"></div>
+      </form>
+    </div>
+  </section>
+</main>
+<script>
+  // Set this to your deployed Cloudflare Worker URL after setup.
+  const API_BASE = "https://tokutv-archive-request.stevenlandell33.workers.dev/";
+  const mainPage = document.getElementById("mainPage");
+  const requestPage = document.getElementById("requestPage");
+  const mainStatus = document.getElementById("mainStatus");
+  const formStatus = document.getElementById("formStatus");
+  let requestType = "";
+
+  document.getElementById("continueBtn").addEventListener("click", () => {
+    const selected = document.querySelector('input[name="requestType"]:checked');
+    if (!selected) {
+      mainStatus.className = "status error";
+      mainStatus.textContent = "Please choose a request type.";
+      return;
+    }
+    requestType = selected.value;
+    mainPage.classList.add("hidden");
+    requestPage.classList.remove("hidden");
+    formStatus.className = "status";
+    document.getElementById("itemName").value = "";
+    if (requestType === "show") {
+      document.getElementById("requestHeading").textContent = "Request Form";
+      document.getElementById("fieldLabel").textContent = "Requested Item Name:";
+      document.getElementById("fieldHint").textContent = "Request anything that follows the rules above or this request will be declined. Keep this short please; only type in the name.";
+      document.getElementById("showInstructions").classList.remove("hidden");
+      document.getElementById("missingInstructions").classList.add("hidden");
+    } else {
+      document.getElementById("requestHeading").textContent = "Missing Item Request Form";
+      document.getElementById("fieldLabel").textContent = "Missing Item Name:";
+      document.getElementById("fieldHint").textContent = "Request anything I am missing and please abide by the rules above. Keep this short please; only type in the name.";
+      document.getElementById("missingInstructions").classList.remove("hidden");
+      document.getElementById("showInstructions").classList.add("hidden");
+    }
+  });
+
+  document.getElementById("backBtn").addEventListener("click", () => {
+    requestPage.classList.add("hidden");
+    mainPage.classList.remove("hidden");
+    formStatus.className = "status";
+  });
+
+  document.getElementById("requestForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const itemName = document.getElementById("itemName").value.trim();
+    if (!itemName) return;
+    const submitBtn = document.getElementById("submitBtn");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+    formStatus.className = "status";
+    try {
+      if (API_BASE.includes("YOUR-WORKER-NAME")) throw new Error("The form backend has not been configured yet.");
+      const response = await fetch(API_BASE + "/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requestType, itemName })
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Submission failed. Please try again later.");
+      formStatus.className = "status success";
+      formStatus.textContent = "Your request has been submitted successfully.";
+      document.getElementById("itemName").value = "";
+    } catch (err) {
+      formStatus.className = "status error";
+      formStatus.textContent = err.message || "Something went wrong. Please try again.";
+    } finally {
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit";
+    }
+  });
+</script>
+</body>
+</html>
