@@ -43,6 +43,15 @@
     <div class="content small">Use this form to request an archive addition. Please read the rules below before submitting. By submitting, you acknowledge that your IP address is collected privately for request-abuse prevention and is not displayed on the public request-status sheet.</div>
   </section>
 
+  <section class="card hidden" id="closedPage">
+    <div class="top">
+      <h1>TokuTV Archive Request</h1>
+    </div>
+    <div class="content">
+      The limit of 10 requests has been reached. Please check back tomorrow or the day after to submit another request.
+    </div>
+  </section>
+
   <section class="card" id="mainPage">
     <div class="bar">Request Form</div>
     <div class="content instructions">
@@ -96,11 +105,38 @@
   const API_BASE = "https://tokutv-archive-request.stevenlandell33.workers.dev";
   const mainPage = document.getElementById("mainPage");
   const requestPage = document.getElementById("requestPage");
+  const closedPage = document.getElementById("closedPage");
   const mainStatus = document.getElementById("mainStatus");
   const formStatus = document.getElementById("formStatus");
   let requestType = "";
+  let formIsClosed = false;
 
-  document.getElementById("continueBtn").addEventListener("click", () => {
+  function showClosedPage() {
+    formIsClosed = true;
+    mainPage.classList.add("hidden");
+    requestPage.classList.add("hidden");
+    closedPage.classList.remove("hidden");
+  }
+
+  async function checkFormStatus() {
+    try {
+      const response = await fetch(API_BASE + "/api/status", { method: "GET" });
+      if (!response.ok) throw new Error("Could not check form status.");
+      const data = await response.json();
+      if (data.closed === true) showClosedPage();
+    } catch (error) {
+      // If the status check is unavailable, leave the form visible.
+      // The submit endpoint still enforces the limit.
+      console.error("Form status check failed:", error);
+    }
+  }
+
+  // Check the limit whenever someone opens or reloads the page.
+  checkFormStatus();
+
+  document.getElementById("continueBtn").addEventListener("click", async () => {
+    await checkFormStatus();
+    if (formIsClosed) return;
     const selected = document.querySelector('input[name="requestType"]:checked');
     if (!selected) {
       mainStatus.className = "status error";
@@ -149,14 +185,35 @@
         body: JSON.stringify({ requestType, itemName })
       });
       const data = await response.json().catch(() => ({}));
-      if (!response.ok) throw new Error(data.error || "Submission failed. Please try again later.");
+      if (!response.ok) {
+        if (response.status === 429 && (data.error || "").toLowerCase().includes("limit of 10")) {
+          showClosedPage();
+          return;
+        }
+        throw new Error(data.error || "Submission failed. Please try again later.");
+      }
+
       formStatus.className = "status success";
       formStatus.textContent = "Your request has been submitted successfully.";
       document.getElementById("itemName").value = "";
+
+      // Return to the main page after a successful submission.
+      setTimeout(() => {
+        requestPage.classList.add("hidden");
+        mainPage.classList.remove("hidden");
+        document.querySelectorAll('input[name="requestType"]').forEach(input => {
+          input.checked = false;
+        });
+        requestType = "";
+        mainStatus.className = "status";
+        formStatus.className = "status";
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Submit";
+        checkFormStatus();
+      }, 2000);
     } catch (err) {
       formStatus.className = "status error";
       formStatus.textContent = err.message || "Something went wrong. Please try again.";
-    } finally {
       submitBtn.disabled = false;
       submitBtn.textContent = "Submit";
     }
