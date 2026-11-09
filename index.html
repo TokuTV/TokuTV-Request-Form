@@ -3,37 +3,60 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0e1116">
   <title>TokuTV Archive Request</title>
   <style>
-    :root { --accent:#111; --bg:#eee; --card:#fff; --text:#161616; --muted:#555; }
+    :root {
+      color-scheme: dark;
+      --bg:#0e1116; --card:#151a22; --raised:#1b212b; --line:#262d39; --line-hi:#38414f;
+      --text:#e7eaf0; --body:#c3c9d4; --muted:#8a93a5;
+      --accent:#f5b942; --accent-ink:#1a1405; --link:#7fb2ff;
+    }
     * { box-sizing:border-box; }
-    body { margin:0; background:var(--bg); color:var(--text); font:16px Arial,Helvetica,sans-serif; line-height:1.5; }
-    main { width:min(720px, calc(100% - 24px)); margin:18px auto 40px; }
-    .card { background:var(--card); border-radius:8px; margin:0 0 14px; overflow:hidden; box-shadow:0 1px 2px #0001; }
-    .top { border-top:10px solid var(--accent); padding:14px 24px 18px; }
-    h1 { margin:0; font-size:clamp(26px,5vw,34px); font-weight:400; }
-    .bar { background:#000; color:#fff; padding:14px 22px; }
-    .content { padding:22px 18px; }
-    .instructions p { margin:0 0 18px; }
+    body { margin:0; background:var(--bg); color:var(--text); font:14.5px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; -webkit-font-smoothing:antialiased; }
+    main { width:min(680px, calc(100% - 20px)); margin:16px auto 36px; }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:12px; margin:0 0 12px; overflow:hidden; }
+    .top { border-top:3px solid var(--accent); padding:16px 22px 14px; }
+    h1 { margin:0; font-size:clamp(22px,4.5vw,27px); font-weight:700; letter-spacing:-.02em; line-height:1.2; }
+    .bar { background:var(--raised); border-bottom:1px solid var(--line); color:var(--text); padding:9px 22px; font-weight:600; font-size:14px; }
+    .content { padding:16px 22px; }
+    .content.small { padding-top:0; }
+    .instructions p { margin:0 0 7px; color:var(--body); }
     .instructions p:last-child { margin-bottom:0; }
-    a { color:#06c; }
-    .choice { display:flex; gap:12px; align-items:flex-start; border:1px solid #bbb; border-radius:6px; padding:15px; margin:12px 0; cursor:pointer; }
-    .choice:hover { background:#f8f8f8; }
-    .choice input { margin-top:5px; }
-    label.field-label { display:block; font-weight:500; margin-bottom:5px; }
-    .hint { margin:0 0 18px; }
-    input[type=text] { display:block; width:min(100%,420px); border:0; border-bottom:1px solid #999; border-radius:0; padding:12px 0; font:inherit; outline-offset:3px; }
-    input[type=text]:focus { border-bottom:2px solid #111; }
-    button { background:#000; color:#fff; border:0; border-radius:4px; padding:12px 22px; font:inherit; font-weight:600; cursor:pointer; }
-    button.secondary { background:#fff; color:#111; border:1px solid #aaa; }
-    button:disabled { opacity:.6; cursor:wait; }
-    .actions { display:flex; justify-content:space-between; gap:12px; margin-top:24px; }
-    .status { display:none; margin-top:16px; padding:12px; border-radius:5px; background:#f4f4f4; }
-    .status.error { display:block; background:#fff0f0; color:#8b0000; }
-    .status.success { display:block; background:#eef8ef; color:#14532d; }
+    .instructions strong { color:var(--text); font-weight:600; }
+    #mainPage .instructions > p:first-child, #showInstructions > p:first-child, #missingInstructions > p:first-child {
+      background:#f5b9421a; border-left:3px solid var(--accent); border-radius:0 8px 8px 0;
+      padding:8px 12px; color:#f8d68a; font-weight:600; margin-bottom:12px;
+    }
+    #showInstructions > p:first-child strong { color:inherit; }
+    h2 { color:var(--text); letter-spacing:-.01em; }
+    a { color:var(--link); text-underline-offset:3px; }
+    a:hover { color:#a9ccff; }
+    .choice { display:flex; gap:12px; align-items:flex-start; background:var(--raised); border:1px solid var(--line); border-radius:10px; padding:12px 14px; margin:8px 0; cursor:pointer; transition:border-color .15s, background .15s; }
+    .choice:hover { border-color:var(--line-hi); }
+    .choice:has(input:checked) { border-color:var(--accent); background:#f5b94212; }
+    .choice input { margin-top:4px; width:16px; height:16px; accent-color:var(--accent); flex:none; }
+    .choice strong { color:var(--text); }
+    label.field-label { display:block; font-weight:600; margin-bottom:4px; color:var(--text); }
+    .hint { margin:0 0 10px; color:var(--muted); font-size:13px; }
+    input[type=text] { display:block; width:100%; max-width:460px; background:#0f131a; color:var(--text); border:1px solid var(--line-hi); border-radius:8px; padding:9px 12px; font:inherit; transition:border-color .15s, box-shadow .15s; }
+    input[type=text]::placeholder { color:#5d6677; }
+    input[type=text]:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px #f5b94233; }
+    button { background:var(--accent); color:var(--accent-ink); border:0; border-radius:7px; padding:7px 16px; font:inherit; font-size:14px; font-weight:700; cursor:pointer; transition:filter .15s, background .15s; }
+    button:hover { filter:brightness(1.08); }
+    button.secondary { background:transparent; color:var(--body); border:1px solid var(--line-hi); font-weight:600; }
+    button.secondary:hover { background:var(--raised); filter:none; }
+    button:disabled { opacity:.55; cursor:wait; }
+    :focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+    .actions { display:flex; justify-content:space-between; gap:10px; margin-top:16px; }
+    .status { display:none; margin-top:12px; padding:9px 12px; border-radius:8px; background:var(--raised); border:1px solid var(--line); color:var(--body); }
+    .status.error { display:block; background:#2b1519; border-color:#5a232b; color:#ffa9b2; }
+    .status.success { display:block; background:#10271c; border-color:#1f4d34; color:#8fe3b0; }
     .hidden { display:none !important; }
-    .small { color:var(--muted); font-size:14px; }
-    @media (max-width:480px) { .top { padding:12px 16px; } .content { padding:18px 15px; } }
+    .small { color:var(--muted); font-size:13px; }
+    @media (max-width:480px) { .top, .content, .bar { padding-left:14px; padding-right:14px; } }
+    @media (prefers-reduced-motion:reduce) { * { transition:none !important; } }
   </style>
 </head>
 <body>
@@ -56,17 +79,17 @@
     <div class="bar">Request Form</div>
     <div class="content instructions">
       <p>FOLLOW THE RULES or your request will be ignored</p>
-      <p><strong>- Request Any Tokusatsu Show you want to be archived on this page</p>
-      <p><strong>-DO NOT SPAM + Do not request multiple shows/seasons in one response do it separately</p>
-      <p><strong>-Do not request anything from this list: Zeztz Movie/MyTh Specials/Gavan Infiniy Movie/Omegahorn Specials/</p>
-      <p><strong>- Anime Requests must be toku adjacent</p>
-      <p><strong>- I do not take J-Drama requests</p>
+      <p><strong>- Request Any Tokusatsu Show you want to be archived on this page</strong></p>
+      <p><strong>-DO NOT SPAM + Do not request multiple shows/seasons in one response do it separately</strong></p>
+      <p><strong>-Do not request anything from this list: Zeztz Movie/MyTh Specials/Gavan Infinity Movie/Omegahorn Specials/</strong></p>
+      <p><strong>- Anime Requests must be toku adjacent</strong></p>
+      <p><strong>- I do not take J-Drama requests</strong></p>
       <p><strong>-Do not request western tokusatsu (Power Rangers, Masked Rider, etc) these are readily available on the internet as opposed to eastern tokusatsu</strong></p>
       <p><strong>Failure to follow the rules will lead to your request being declined</strong></p>
       <p><strong>PLEASE CHECK THE STATUS PAGE AND THE ARCHIVE TO SEE IF WHAT YOU WANT TO REQUEST HAS ALREADY BEEN COMPLETED</strong></p>
       <p>You can check the status of requests on this spreadsheet page: <a href="https://docs.google.com/spreadsheets/d/1OfmjAMmUs3fdraim6Nsshym29gD0X_0nEDLiWpwKOo4/edit?gid=966274365#gid=966274365&fvid=1497953246" target="_blank" rel="noopener">TokuTV Archive Request Status Page</a></p>
-       <p>ARCHIVE LINK: <a href="https://github.com/TokuTV/TokuArchive" target="_blank" rel="noopener">TokuArchive</a></strong></p>
-      <h2 style="font-size:18px;margin-top:28px">Choose a request type</h2>
+       <p>ARCHIVE LINK: <a href="https://github.com/TokuTV/TokuArchive" target="_blank" rel="noopener">TokuArchive</a></p>
+      <h2 style="font-size:16px;margin:18px 0 4px">Choose a request type</h2>
       <label class="choice"><input type="radio" name="requestType" value="show"><span><strong>Request a Show/Movie/Special</strong><br><span class="small">Request something that has not already been uploaded to the archive.</span></span></label>
       <label class="choice"><input type="radio" name="requestType" value="missing"><span><strong>Request a Missing Episode/Movie/Special</strong><br><span class="small">Only for content from a show already uploaded to the archive.</span></span></label>
       <div class="actions"><span></span><button id="continueBtn">Next</button></div>
@@ -110,7 +133,7 @@
   </section>
 </main>
 <script>
-  // Set this to your deployed Cloudflare Worker URL after setup.
+
   const API_BASE = "https://tokutv-archive-request.stevenlandell33.workers.dev";
   const mainPage = document.getElementById("mainPage");
   const requestPage = document.getElementById("requestPage");
@@ -134,13 +157,13 @@
       const data = await response.json();
       if (data.closed === true) showClosedPage();
     } catch (error) {
-      // If the status check is unavailable, leave the form visible.
-      // The submit endpoint still enforces the limit.
+      // if the status check is unavailable, leave the form visible
+      // limit is still enforced
       console.error("Form status check failed:", error);
     }
   }
 
-  // Check the limit whenever someone opens or reloads the page.
+  // check the limit whenever someone opens or reloads the page
   checkFormStatus();
 
   document.getElementById("continueBtn").addEventListener("click", async () => {
@@ -206,7 +229,7 @@
       formStatus.textContent = "Your request has been submitted successfully.";
       document.getElementById("itemName").value = "";
 
-      // Return to the main page after a successful submission.
+      // return to the main page after a submission
       setTimeout(() => {
         requestPage.classList.add("hidden");
         mainPage.classList.remove("hidden");
